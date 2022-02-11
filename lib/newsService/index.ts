@@ -9,7 +9,7 @@ export class NewsService implements INewsService {
         this.list = list ? JSON.parse(list) as IPage[] : [];
     }
 
-    private getFullList (): INewsItem[] {
+    private margePages (): INewsItem[] {
         return this.list.reduce((acc, val) => [...acc, ...val.news], [] as INewsItem[]);
     }
 
@@ -34,9 +34,9 @@ export class NewsService implements INewsService {
         }
     }
 
-    public search (q: string):  Promise<INewsItem[]> {
+    public search = (q: string): Promise<INewsItem[]> => {
         const query = q.toLowerCase();
-        const result = this.getFullList().filter((item) => item.title?.toLowerCase().includes(query) || item.description?.toLowerCase().includes(query));
+        const result = this.margePages().filter((item) => item.title?.toLowerCase().includes(query) || item.description?.toLowerCase().includes(query));
         return Promise.resolve(result);
     }
 

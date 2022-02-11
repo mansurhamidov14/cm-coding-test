@@ -1,37 +1,41 @@
-import * as React from "react";
-import { Container, Divider, Grid, IconButton, InputAdornment, TextField, Typography } from "@mui/material";
+import { Box, Container, Divider, Grid, IconButton, InputAdornment, TextField, Typography } from "@mui/material";
 import { grey } from '@mui/material/colors';
+import { SearchRounded } from "@mui/icons-material";
+import * as React from "react";
 import type { GetStaticProps, NextPage } from "next";
 import Head from "next/head";
-import newsService from "../../lib/newsService";
+
+import { Async, AsyncWithInfiniteScroll, Loading, NewsItem } from "../../components";
+import { useAsyncData, useAsyncInfiniteContent } from "../../hooks";
 import contentfulService from "../../lib/contentfulService";
-import theme from "../../src/theme";
-import { Box } from "@mui/system";
-import { SearchRounded } from "@mui/icons-material";
-import { AsyncInfiniteScrollContent } from "../../components/AsyncInfiniteScrollContent";
-import { useAsyncInfiniteContent } from "../../hooks/useAsyncInfiniteContent";
-import { NewsItem } from "../../components/NewsItem";
+import newsService from "../../lib/newsService";
 import { INewsItem } from "../../lib/newsService/models";
-import { Loading } from "../../components/Loading";
+import theme from "../../src/theme";
 
 interface IProps {
   fields: any;
 }
 
+function renderNews (data: INewsItem[]) {
+  return (
+    <>{data.map((newsItem, index) => <NewsItem key={index} {...newsItem} />)}</>
+  )
+}
+ 
 const News: NextPage<IProps> = ({ fields }) => {
   const news = useAsyncInfiniteContent<INewsItem>(newsService.getList);
+  const [searchResults, getSearchResults] = useAsyncData<INewsItem[]>(newsService.search);
   const [searchText, setSearchText] = React.useState<string>("");
+  const [viewSearchResults, setViewSearchResults] = React.useState(false);
 
   const searchNews = React.useCallback((e: React.FormEvent<SubmitEvent>) => {
     e.preventDefault();
-    // if (searchText) {
-    //   setViewSearchResults(true);
-    //   newsService.search(searchText).then(setNewsList);
-    // } else {
-    //   setViewSearchResults(false);
-    //   setCurrentPage(1);
-    //   newsService.getList(1).then(setNewsList);
-    // }
+    if (searchText) {
+      setViewSearchResults(true);
+      getSearchResults(searchText);
+    } else {
+      setViewSearchResults(false);
+    }
   }, [searchText])
 
   return (
@@ -85,18 +89,21 @@ const News: NextPage<IProps> = ({ fields }) => {
             </Box>
           </Grid>
           <Grid item lg={9}>
-            <AsyncInfiniteScrollContent
-              asyncData={news}
-              successRender={
-                (data) => {
-                  return (
-                    <>{data.map((newsItem, index) => <NewsItem key={index} {...newsItem} />)}</>
-                  )
-                }
-              }
-              initialLoading={() => <Loading />}
-              paginationLoading={() => <Loading small />}
-            />
+            {viewSearchResults ? (
+                <Async
+                  asyncData={searchResults}
+                  successRender={renderNews}
+                  loadingRender={() => <Loading />}
+                />
+              ) : (
+                <AsyncWithInfiniteScroll
+                  asyncData={news}
+                  successRender={renderNews}
+                  initialLoading={() => <Loading />}
+                  paginationLoading={() => <Loading small />}
+                />
+              )
+            }
           </Grid>
         </Grid>
       </Container>

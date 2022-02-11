@@ -1,5 +1,5 @@
 import React from "react";
-import { IAsyncData } from "../../hooks/useAsyncInfiniteContent/models";
+import { IAsyncData } from "../../hooks/models";
 
 interface IProps<T> {
   asyncData: IAsyncData<T>;
@@ -9,7 +9,7 @@ interface IProps<T> {
   paginationLoading?: () => JSX.Element;
 }
 
-export const AsyncInfiniteScrollContent = <T, >({
+export const AsyncWithInfiniteScroll = <T, >({
   asyncData,
   errorRender,
   successRender,

@@ -3,10 +3,5 @@ export type IAsyncData<T> =
     | { status: "error", error: string, data?: null }
     | { status: "initial", data?: null }
 
-interface ISuccessAsyncData<T> {
-    status: "success";
-    data: T;
-    error: null;
-}
-
 export type GetInfiniteAsyncData<T> = (pageNumber: number) => Promise<T>;
+export type GetAsyncData<T> = (...params: any[]) => Promise<T>;
