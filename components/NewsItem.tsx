@@ -5,9 +5,13 @@ import * as React from "react";
 import { INewsItem } from "../lib/newsService/models";
 import theme from "../src/theme";
 
-export const NewsItem: React.FC<INewsItem> = (item) => {
+interface IProps extends INewsItem {
+  className?: string
+}
+
+export const NewsItem: React.FC<IProps> = (item) => {
   return (
-    <Grid container spacing={2} marginBottom={4}>
+    <Grid className={item.className} container spacing={2} marginBottom={4}>
       <Grid item sm={5} lg={4}>
         <img src={item.imageUrl} style={{ width: '100%' }} />
       </Grid>

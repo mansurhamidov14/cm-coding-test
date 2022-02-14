@@ -3,28 +3,25 @@ import * as React from "react";
 import { GetAsyncData, GetInfiniteAsyncData, IAsyncData } from "./models";
 import { isSuccess } from "../components/Async/utils";
 
-export function useAsyncInfiniteContent<T> (getInfiniteAsyncData: GetInfiniteAsyncData<T[]>):
+export function useAsyncInfiniteContent<T> (getInfiniteAsyncData: GetInfiniteAsyncData<T[]>, itemSelector: string):
   [IAsyncData<T[]>, (cb?: GetInfiniteAsyncData<T[]>) => void, () => void, () => void] {
   const [state, setState] = React.useState<IAsyncData<T[]>>({ status: 'initial' });
   const [currentPage, setCurrentPage] = React.useState(1);
   const [active, setActive] = React.useState<boolean>(false);
   const [freezeRequest, setFreezeRequest] = React.useState<boolean>(false);
   const callbackRef = React.useRef<GetInfiniteAsyncData<T[]>>(getInfiniteAsyncData);
-  
+
   React.useEffect(() => {
-    const scrollCallback = () => {
-      if (
-        typeof window !== 'undefined' &&
-        (window.innerHeight + window.scrollY) >= document.body.offsetHeight &&
-        isSuccess(state) &&
-        active
-      ) {
+    const callback: IntersectionObserverCallback = function([element]) {
+      if (element.isIntersecting && isSuccess(state) && active) {
         setCurrentPage(state => state + 1);
-        window.removeEventListener("scroll", scrollCallback);
       }
     };
-    window.addEventListener('scroll', scrollCallback)
-    return () => window.removeEventListener('scroll', scrollCallback);
+    const observer = new IntersectionObserver(callback, { threshold: 1 });
+    const target = document.querySelector(`${itemSelector}:last-child`);
+    if (target) observer.observe(target);
+    
+    return () => observer.disconnect();
   }, [currentPage, state, active, freezeRequest]);
 
   const init = React.useCallback((callback?: GetInfiniteAsyncData<T[]>) => {
@@ -53,7 +50,6 @@ export function useAsyncInfiniteContent<T> (getInfiniteAsyncData: GetInfiniteAsy
       callbackRef.current(currentPage)
         .then((response) => {
           setFreezeRequest(false);
-          console.log('res', response);
           setState((prevState) => ({
             status: "success",
             data: [...((prevState as any).data || []), ...response]

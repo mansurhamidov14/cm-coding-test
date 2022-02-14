@@ -18,12 +18,12 @@ interface IProps {
 
 function renderNews (data: INewsItem[]) {
   return (
-    <>{data.map((newsItem, index) => <NewsItem key={index} {...newsItem} />)}</>
+    <>{data.map((newsItem, index) => <NewsItem key={index} className="news-item" {...newsItem} />)}</>
   )
 }
  
 const News: NextPage<IProps> = ({ fields }) => {
-  const [news, init, stop] = useAsyncInfiniteContent<INewsItem>((page) => newsService.search(page));
+  const [news, init, stop] = useAsyncInfiniteContent<INewsItem>(newsService.search, '.news-item');
   const [searchText, setSearchText] = React.useState<string>("");
 
   React.useEffect(() => init(), []);
@@ -32,7 +32,7 @@ const News: NextPage<IProps> = ({ fields }) => {
     e.preventDefault();
     stop();
     init((page) => newsService.search(page, searchText));
-  }, [searchText])
+  }, [searchText]);
 
   return (
     <div>
