@@ -51,7 +51,6 @@ const Item: NextPage<IProps> = ({ item }) => {
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   if (params?.slug) {
-    console.log(params?.slug);
     const item = await newsService.getBySlug(params.slug as string);
     return {
       props: { item }

@@ -9,21 +9,18 @@ export class NewsService implements INewsService {
         this.service = algoliaService.initIndex('news');
     }
 
-    public search = async (page: number = 1, q: string = ''): Promise<INewsItem[]> => {
+    public search = async (page?: number, q: string = ''): Promise<INewsItem[]> => {
         const response = await this.service.search(q, { page });
         return response.hits as any;
     }
 
-    public getBySlug (slug: string): Promise<INewsItem> {
-        // return new Promise((resolve, reject) => {
-        //     const newsContent = this.list.find(({ slug: _slug }) => slug === _slug);
-        //     if (newsContent) {
-        //         resolve(newsContent);
-        //     } else {
-        //         reject('404 Page not found')
-        //     }
-        // });
-        return null as any;
+    public async getBySlug (slug: string): Promise<INewsItem> {
+        const searchRes = await this.search(undefined, slug);
+        if (searchRes.length) {
+            return searchRes[0];
+        } else {
+            throw new Error('404 Page not found');
+        }
     }
 }
 
