@@ -1,8 +1,12 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
+import algoliaService from "../lib/algoliaService";
 
 const Home: NextPage = () => {
+  if (typeof window !== 'undefined') {
+    (window as any).algoliaService = algoliaService
+  }
   return (
     <div className={styles.container}>
       <Head>

@@ -5,8 +5,8 @@ import * as React from "react";
 import type { GetStaticProps, NextPage } from "next";
 import Head from "next/head";
 
-import { Async, AsyncWithInfiniteScroll, Loading, NewsItem } from "../../components";
-import { useAsyncData, useAsyncInfiniteContent } from "../../hooks";
+import { AsyncWithInfiniteScroll, Loading, NewsItem } from "../../components";
+import { useAsyncInfiniteContent } from "../../hooks";
 import contentfulService from "../../lib/contentfulService";
 import newsService from "../../lib/newsService";
 import { INewsItem } from "../../lib/newsService/models";
@@ -23,19 +23,15 @@ function renderNews (data: INewsItem[]) {
 }
  
 const News: NextPage<IProps> = ({ fields }) => {
-  const news = useAsyncInfiniteContent<INewsItem>(newsService.getList);
-  const [searchResults, getSearchResults] = useAsyncData<INewsItem[]>(newsService.search);
+  const [news, init, stop] = useAsyncInfiniteContent<INewsItem>((page) => newsService.search(page));
   const [searchText, setSearchText] = React.useState<string>("");
-  const [viewSearchResults, setViewSearchResults] = React.useState(false);
 
-  const searchNews = React.useCallback((e: React.FormEvent<SubmitEvent>) => {
+  React.useEffect(() => init(), []);
+
+  const searchNews = React.useCallback((e: any) => {
     e.preventDefault();
-    if (searchText) {
-      setViewSearchResults(true);
-      getSearchResults(searchText);
-    } else {
-      setViewSearchResults(false);
-    }
+    stop();
+    init((page) => newsService.search(page, searchText));
   }, [searchText])
 
   return (
@@ -89,21 +85,12 @@ const News: NextPage<IProps> = ({ fields }) => {
             </Box>
           </Grid>
           <Grid item lg={9}>
-            {viewSearchResults ? (
-                <Async
-                  asyncData={searchResults}
-                  successRender={renderNews}
-                  loadingRender={() => <Loading />}
-                />
-              ) : (
-                <AsyncWithInfiniteScroll
-                  asyncData={news}
-                  successRender={renderNews}
-                  initialLoading={() => <Loading />}
-                  paginationLoading={() => <Loading small />}
-                />
-              )
-            }
+            <AsyncWithInfiniteScroll
+              asyncData={news}
+              successRender={renderNews}
+              initialLoading={() => <Loading />}
+              paginationLoading={() => <Loading small />}
+            />
           </Grid>
         </Grid>
       </Container>

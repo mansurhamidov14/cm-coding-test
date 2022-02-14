@@ -1,11 +1,24 @@
-export interface INewsItem {
-    slug?: string;
+interface INewsTopics {
+    id: string;
     title: string;
-    category: string[];
+}
+
+interface IOrganizatioFields {
+    name: string;
+}
+
+interface IOrganization {
+    fields: IOrganizatioFields;
+}
+
+export interface INewsItem {
+    slug: string;
+    name: string;
+    topics: INewsTopics[];
     description: string;
     content: string;
-    image_url: string | null;
-    creator: string[];
+    imageUrl: string;
+    organization: IOrganization[];
     publicationDate: string;
 }
 
@@ -15,6 +28,5 @@ export interface IPage {
 }
 
 export interface INewsService {
-    getList: (page?: number) => Promise<INewsItem[]>;
-    search: (q: string) => Promise<INewsItem[]>;
+    search: (page?: number, q?: string) => Promise<INewsItem[]>;
 }
