@@ -15,9 +15,9 @@ export class NewsService implements INewsService {
     }
 
     public async getBySlug (slug: string): Promise<INewsItem> {
-        const searchRes = await this.search(undefined, slug);
-        if (searchRes.length) {
-            return searchRes[0];
+        const { hits } = await this.service.search('', {filters: `slug:${slug}`});
+        if (hits.length) {
+            return hits[0] as any;
         } else {
             throw new Error('404 Page not found');
         }
