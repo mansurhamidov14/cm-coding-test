@@ -6,16 +6,19 @@ import { INewsItem } from "../lib/newsService/models";
 import theme from "../src/theme";
 
 interface IProps extends INewsItem {
-  className?: string
+  className?: string;
+  direction?: 'row' | 'column';
 }
 
-export const NewsItem: React.FC<IProps> = (item) => {
+const NewsItem: React.FC<IProps> = (item) => {
+  const isColumn = React.useMemo(() => item.direction === 'column', [item.direction]);
+
   return (
     <Grid className={item.className} container spacing={2} marginBottom={4}>
-      <Grid item sm={5} lg={4}>
+      <Grid item sm={isColumn ? 12 : 5} lg={isColumn ? 12 : 4}>
         <img src={item.imageUrl} style={{ width: '100%' }} />
       </Grid>
-      <Grid item sm={7} lg={8}>
+      <Grid item sm={isColumn ? 12 : 7} lg={isColumn ? 12 : 8}>
         <Typography variant="subtitle1" component="h4" color={theme.palette.primary.main}>
           {item.topics.map(({ title }) => title).join(", ")}
         </Typography>
@@ -42,3 +45,5 @@ export const NewsItem: React.FC<IProps> = (item) => {
     </Grid>
   );
 };
+
+export default React.memo(NewsItem);

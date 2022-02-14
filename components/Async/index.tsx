@@ -7,7 +7,7 @@ interface IProps<T> {
   loadingRender?: () => JSX.Element;
 }
 
-export const Async = <T, >({
+const Async = <T, >({
   asyncData,
   errorRender,
   successRender,
@@ -22,3 +22,5 @@ export const Async = <T, >({
   }
   return null;
 }
+
+export default Async;

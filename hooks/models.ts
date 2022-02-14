@@ -4,4 +4,4 @@ export type IAsyncData<T> =
     | { status: "initial", data?: null }
 
 export type GetInfiniteAsyncData<T> = (pageNumber: number) => Promise<T>;
-export type GetAsyncData<T> = (...params: any[]) => Promise<T>;
+export type GetAsyncData<T> = () => Promise<T>;

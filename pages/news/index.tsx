@@ -5,7 +5,7 @@ import * as React from "react";
 import type { GetStaticProps, NextPage } from "next";
 import Head from "next/head";
 
-import { AsyncWithInfiniteScroll, Loading, NewsItem } from "../../components";
+import { AsyncWithInfiniteScroll, Loading, NewsItem, TopNews } from "../../components";
 import { useAsyncInfiniteContent } from "../../hooks";
 import contentfulService from "../../lib/contentfulService";
 import newsService from "../../lib/newsService";
@@ -23,6 +23,9 @@ function renderNews (data: INewsItem[]) {
 }
  
 const News: NextPage<IProps> = ({ fields }) => {
+  if (typeof window !== 'undefined') {
+    (window as any).searchIndex = newsService.service;
+  }
   const [news, init, stop] = useAsyncInfiniteContent<INewsItem>(newsService.search, '.news-item');
   const [searchText, setSearchText] = React.useState<string>("");
 
@@ -56,6 +59,7 @@ const News: NextPage<IProps> = ({ fields }) => {
       </Container>
       <Divider />
       <Container>
+        <TopNews />
         <Typography paddingY={3} variant="h4" component="h1" textAlign="center" fontWeight="medium">
           {fields.ttile}
         </Typography>

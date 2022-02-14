@@ -29,4 +29,6 @@ export interface IPage {
 
 export interface INewsService {
     search: (page?: number, q?: string) => Promise<INewsItem[]>;
+    getTop: () => Promise<INewsItem[]>;
+    getBySlug: (slug: string) => Promise<INewsItem>;
 }

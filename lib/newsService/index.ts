@@ -3,7 +3,7 @@ import algoliaService from '../algoliaService';
 import { SearchIndex } from "algoliasearch/lite";
 
 export class NewsService implements INewsService {
-    private service: SearchIndex;
+    public service: SearchIndex;
 
     constructor () {
         this.service = algoliaService.initIndex('news');
@@ -11,6 +11,11 @@ export class NewsService implements INewsService {
 
     public search = async (page?: number, q: string = ''): Promise<INewsItem[]> => {
         const response = await this.service.search(q, { page });
+        return response.hits as any;
+    }
+
+    public getTop = async (): Promise<INewsItem[]> => {
+        const response = await this.service.search('', { filters: 'avgRating > 4', hitsPerPage: 3 });
         return response.hits as any;
     }
 

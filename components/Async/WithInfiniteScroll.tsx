@@ -9,7 +9,7 @@ interface IProps<T> {
   paginationLoading?: () => JSX.Element;
 }
 
-export const AsyncWithInfiniteScroll = <T, >({
+const AsyncWithInfiniteScroll = <T, >({
   asyncData,
   errorRender,
   successRender,
@@ -30,3 +30,5 @@ export const AsyncWithInfiniteScroll = <T, >({
   }
   return null;
 }
+
+export default AsyncWithInfiniteScroll;

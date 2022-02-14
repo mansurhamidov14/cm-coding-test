@@ -62,11 +62,11 @@ export function useAsyncInfiniteContent<T> (getInfiniteAsyncData: GetInfiniteAsy
   return [state, run, stop, pause];
 }
 
-export function useAsyncData<T> (getData: GetAsyncData<T>): [IAsyncData<T>, (...params: any[]) => void] {
+export function useAsyncData<T> (getData: GetAsyncData<T>): [IAsyncData<T>, () => void] {
   const [state, setState] = React.useState<IAsyncData<T>>({ status: "initial" });
 
-  const getAsyncData = React.useCallback((...params: any[]) => {
-    getData(...params).then((data) => setState({ status: "success", data }));
+  const getAsyncData = React.useCallback(() => {
+    getData().then((data) => setState({ status: "success", data }));
   }, []);
 
   return [state, getAsyncData];

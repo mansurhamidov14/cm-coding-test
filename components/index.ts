@@ -1,4 +1,7 @@
-export { Async } from "./Async";
-export { AsyncWithInfiniteScroll } from "./Async/WithInfiniteScroll";
-export { Loading } from "./Loading";
-export { NewsItem } from "./NewsItem";
+import Async from "./Async";
+import AsyncWithInfiniteScroll from "./Async/WithInfiniteScroll";
+import Loading from "./Loading";
+import NewsItem from "./NewsItem";
+import TopNews from './TopNews';
+
+export { Async, AsyncWithInfiniteScroll, Loading, NewsItem, TopNews };
