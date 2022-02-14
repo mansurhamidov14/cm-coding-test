@@ -8,7 +8,6 @@ export function useAsyncInfiniteContent<T> (getInfiniteAsyncData: GetInfiniteAsy
   const [state, setState] = React.useState<IAsyncData<T[]>>({ status: 'initial' });
   const [currentPage, setCurrentPage] = React.useState(1);
   const [active, setActive] = React.useState<boolean>(false);
-  const [freezeRequest, setFreezeRequest] = React.useState<boolean>(false);
   const callbackRef = React.useRef<GetInfiniteAsyncData<T[]>>(getInfiniteAsyncData);
 
   React.useEffect(() => {
@@ -22,9 +21,9 @@ export function useAsyncInfiniteContent<T> (getInfiniteAsyncData: GetInfiniteAsy
     if (target) observer.observe(target);
     
     return () => observer.disconnect();
-  }, [currentPage, state, active, freezeRequest]);
+  }, [currentPage, state, active]);
 
-  const init = React.useCallback((callback?: GetInfiniteAsyncData<T[]>) => {
+  const run = React.useCallback((callback?: GetInfiniteAsyncData<T[]>) => {
     if (callback) {
       callbackRef.current = callback;
     }
@@ -43,13 +42,11 @@ export function useAsyncInfiniteContent<T> (getInfiniteAsyncData: GetInfiniteAsy
   
   React.useEffect(() => {
     if (active) {
-      setFreezeRequest(true);
       if (currentPage > 1) {
         setState((prevState) => ({ ...prevState, status: "loading", data: prevState.data || [] }))
       }
       callbackRef.current(currentPage)
         .then((response) => {
-          setFreezeRequest(false);
           setState((prevState) => ({
             status: "success",
             data: [...((prevState as any).data || []), ...response]
@@ -62,7 +59,7 @@ export function useAsyncInfiniteContent<T> (getInfiniteAsyncData: GetInfiniteAsy
     }
   }, [currentPage, active]);
 
-  return [state, init, stop, pause];
+  return [state, run, stop, pause];
 }
 
 export function useAsyncData<T> (getData: GetAsyncData<T>): [IAsyncData<T>, (...params: any[]) => void] {
