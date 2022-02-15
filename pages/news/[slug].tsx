@@ -1,6 +1,6 @@
 import { Container, Grid, Typography } from "@mui/material";
 import moment from 'moment';
-import type { GetServerSideProps, GetStaticPaths, GetStaticProps, NextPage } from "next";
+import type { GetServerSideProps, NextPage } from "next";
 import Head from "next/head";
 import newsService from "../../lib/newsService";
 import { INewsItem } from "../../lib/newsService/models";

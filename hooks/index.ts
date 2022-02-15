@@ -6,7 +6,7 @@ import { isSuccess } from "../components/Async/utils";
 export function useAsyncInfiniteContent<T> (getInfiniteAsyncData: GetInfiniteAsyncData<T[]>, itemSelector: string):
   [IAsyncData<T[]>, (cb?: GetInfiniteAsyncData<T[]>) => void, () => void, () => void] {
   const [state, setState] = React.useState<IAsyncData<T[]>>({ status: 'initial' });
-  const [currentPage, setCurrentPage] = React.useState(1);
+  const [currentPage, setCurrentPage] = React.useState(0);
   const [active, setActive] = React.useState<boolean>(false);
   const callbackRef = React.useRef<GetInfiniteAsyncData<T[]>>(getInfiniteAsyncData);
 
@@ -31,7 +31,7 @@ export function useAsyncInfiniteContent<T> (getInfiniteAsyncData: GetInfiniteAsy
   }, [setActive]);
 
   const stop = React.useCallback(() => {
-    setCurrentPage(1);
+    setCurrentPage(0);
     setActive(false);
     setState({ status: 'initial' });
   }, [setActive]);
@@ -42,7 +42,7 @@ export function useAsyncInfiniteContent<T> (getInfiniteAsyncData: GetInfiniteAsy
   
   React.useEffect(() => {
     if (active) {
-      if (currentPage > 1) {
+      if (currentPage > 0) {
         setState((prevState) => ({ ...prevState, status: "loading", data: prevState.data || [] }))
       }
       callbackRef.current(currentPage)
@@ -62,12 +62,16 @@ export function useAsyncInfiniteContent<T> (getInfiniteAsyncData: GetInfiniteAsy
   return [state, run, stop, pause];
 }
 
-export function useAsyncData<T> (getData: GetAsyncData<T>): [IAsyncData<T>, () => void] {
+export function useAsyncData<T> (getData: GetAsyncData<T>): [IAsyncData<T>, () => void, () => void] {
   const [state, setState] = React.useState<IAsyncData<T>>({ status: "initial" });
 
   const getAsyncData = React.useCallback(() => {
     getData().then((data) => setState({ status: "success", data }));
   }, []);
 
-  return [state, getAsyncData];
+  const clear = React.useCallback(() => {
+    setState({ status: "initial" });
+  }, []);
+
+  return [state, getAsyncData, clear];
 }
