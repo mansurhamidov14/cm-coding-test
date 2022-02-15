@@ -132,7 +132,7 @@ const News: NextPage<IProps> = ({ fields }) => {
           <Grid item lg={9}>
             <AsyncWithInfiniteScroll
               asyncData={news}
-              successRender={(list) => <NewsList list={list} />}
+              successRender={(list) => <NewsList count={newsService.recordsCount} list={list} />}
               initialLoading={() => <Loading />}
               paginationLoading={() => <Loading small />}
             />

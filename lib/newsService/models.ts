@@ -32,10 +32,16 @@ export interface INewsService {
     searchTopics: (q: string) => Promise<ITopicsSearchResult[]>;
     getTop: () => Promise<INewsItem[]>;
     getBySlug: (slug: string) => Promise<INewsItem>;
+    getByTopics: (topics: string, page?: number) => Promise<INewsItem[]>
 }
 
 export interface ITopicsSearchResult {
     count: number;
     highlighted: string;
     value: string;
+}
+
+export interface INewsResponse {
+    hits: INewsItem[];
+    nbHits: number;
 }

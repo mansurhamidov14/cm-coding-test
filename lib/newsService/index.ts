@@ -4,6 +4,7 @@ import { SearchIndex } from "algoliasearch/lite";
 
 export class NewsService implements INewsService {
     public service: SearchIndex;
+    public recordsCount?: number;
 
     constructor () {
         this.service = algoliaService.initIndex('news');
@@ -11,6 +12,7 @@ export class NewsService implements INewsService {
 
     public search = async (page?: number, q: string = ''): Promise<INewsItem[]> => {
         const response = await this.service.search(q, { page });
+        this.recordsCount = response.nbHits;
         return response.hits as any;
     }
 
@@ -34,8 +36,9 @@ export class NewsService implements INewsService {
     }
 
     public getByTopics = async (topics: string, page?: number): Promise<INewsItem[]> => {
-        const { hits } = await this.service.search('', { filters: `topics.title:"${topics}"`, page });
-        return hits as any;
+        const response = await this.service.search('', { filters: `topics.title:"${topics}"`, page });
+        this.recordsCount = response.nbHits;
+        return response.hits as any;
     }
 }
 
